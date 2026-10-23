@@ -1,0 +1,25 @@
+# Environment & secrets
+.env
+*.env.local
+
+# Python cache & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local databases & indices
+data/*.db
+!data/sample_ecommerce.db
+chroma_storage/
+chroma_data/
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+.DS_Store

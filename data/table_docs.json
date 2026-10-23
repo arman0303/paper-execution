@@ -1,0 +1,94 @@
+{
+  "customers": {
+    "name": "customers",
+    "summary": "Master directory of all registered buyer accounts, their geographical locations, and account statuses.",
+    "purpose": "Stores customer profiles and contact details to support order placement, identity tracking, and geographical market analysis.",
+    "dependencies_thoughts": "Primary source of customer entity. Referenced by `orders.customer_id` via foreign key.",
+    "keys": ["id"],
+    "connected_tables": ["orders"],
+    "columns": [
+      {"column": "id", "description": "Unique integer identifier for each customer."},
+      {"column": "name", "description": "Full name of the customer."},
+      {"column": "email", "description": "Customer email address used for notifications and unique login identification."},
+      {"column": "city", "description": "Primary city where the customer is based."},
+      {"column": "country", "description": "Customer country of residence (e.g., 'USA', 'UK', 'Spain', 'Germany')."},
+      {"column": "created_at", "description": "Timestamp when the customer profile was initially registered."},
+      {"column": "status", "description": "Account status: 'active', 'inactive', or 'suspended'."}
+    ],
+    "entities": ["customer", "buyer", "user", "account", "country", "city", "registration date"],
+    "strong_entities": ["customer", "account", "country", "status"]
+  },
+  "products": {
+    "name": "products",
+    "summary": "Catalog of all goods available in the store, their categories, inventory quantities, and base pricing.",
+    "purpose": "Maintains merchandise information, pricing, stock levels, and product category grouping to manage commerce operations.",
+    "dependencies_thoughts": "Referenced by `order_items.product_id` to determine line-item pricing and item names.",
+    "keys": ["id"],
+    "connected_tables": ["order_items"],
+    "columns": [
+      {"column": "id", "description": "Unique integer identifier for the product item."},
+      {"column": "name", "description": "Descriptive title or commercial name of the product."},
+      {"column": "category", "description": "Merchandise classification category, such as 'Electronics', 'Apparel', or 'Home & Kitchen'."},
+      {"column": "price", "description": "Standard retail unit selling price in dollars."},
+      {"column": "stock_quantity", "description": "Current number of units remaining in warehouse inventory."},
+      {"column": "is_active", "description": "Boolean flag (1 for active, 0 for discontinued/inactive)."}
+    ],
+    "entities": ["product", "item", "merchandise", "category", "retail price", "inventory", "stock"],
+    "strong_entities": ["product", "category", "price", "stock_quantity"]
+  },
+  "orders": {
+    "name": "orders",
+    "summary": "Transaction headers capturing buyer purchases, order lifecycle statuses, total billings, and destination.",
+    "purpose": "Records customer purchasing transactions, tracking shipment fulfillment states and aggregated order values.",
+    "dependencies_thoughts": "Parent table for `order_items` (via `order_id`) and `payments` (via `order_id`). Foreign key `customer_id` joins to `customers.id`.",
+    "keys": ["id", "customer_id"],
+    "connected_tables": ["customers", "order_items", "payments"],
+    "columns": [
+      {"column": "id", "description": "Unique identifier for the order purchase transaction."},
+      {"column": "customer_id", "description": "Foreign key pointing to `customers.id` representing the buyer."},
+      {"column": "order_date", "description": "Date and time when the customer placed the order."},
+      {"column": "status", "description": "Fulfillment status: 'pending', 'completed', 'cancelled', or 'refunded'."},
+      {"column": "total_amount", "description": "Gross financial total for the entire order in USD."},
+      {"column": "shipping_city", "description": "Destination city for physical shipment delivery."},
+      {"column": "shipping_country", "description": "Destination country for delivery."}
+    ],
+    "entities": ["order", "purchase", "transaction", "order status", "sales revenue", "shipping destination"],
+    "strong_entities": ["order", "customer_id", "status", "total_amount", "order_date"]
+  },
+  "order_items": {
+    "name": "order_items",
+    "summary": "Detailed line items for each order specifying products purchased, quantities, unit prices, and discounts.",
+    "purpose": "Deconstructs an order into individual product lines to track product-level sales volumes and discounts.",
+    "dependencies_thoughts": "Junction entity between `orders` (via `order_id`) and `products` (via `product_id`).",
+    "keys": ["id", "order_id", "product_id"],
+    "connected_tables": ["orders", "products"],
+    "columns": [
+      {"column": "id", "description": "Unique primary key for the specific order line item."},
+      {"column": "order_id", "description": "Foreign key pointing to `orders.id`."},
+      {"column": "product_id", "description": "Foreign key pointing to `products.id`."},
+      {"column": "quantity", "description": "Number of units purchased for this product line."},
+      {"column": "unit_price", "description": "Charged price per individual unit at purchase time."},
+      {"column": "discount", "description": "Monetary discount deduction applied to the line item."}
+    ],
+    "entities": ["order item", "line item", "purchased quantity", "sales volume", "product sale"],
+    "strong_entities": ["order_items", "order_id", "product_id", "quantity"]
+  },
+  "payments": {
+    "name": "payments",
+    "summary": "Financial payment settlement records for orders, including payment gateways, amounts, and statuses.",
+    "purpose": "Logs transactional payment reconciliation, settlement outcomes, and payment method attribution.",
+    "dependencies_thoughts": "Foreign key `order_id` references `orders.id`.",
+    "keys": ["id", "order_id"],
+    "connected_tables": ["orders"],
+    "columns": [
+      {"column": "id", "description": "Unique integer identifier for the payment event."},
+      {"column": "order_id", "description": "Foreign key pointing to the corresponding `orders.id`."},
+      {"column": "payment_date", "description": "Timestamp when the payment attempt was processed."},
+      {"column": "payment_method", "description": "Channel used: 'credit_card', 'paypal', 'bank_transfer', or 'crypto'." ,
+      "status": "Outcome status: 'successful', 'failed', or 'refunded'."},
+      {"column": "amount", "description": "Financial dollar amount settled in this payment transaction."}
+    ],
+    "entities": ["payment", "settlement", "payment method", "payment status", "collected revenue"],
+    "strong_entities": ["payments", "order_id", "payment_method", "status", "amount"]
+  }
+}

@@ -1,0 +1,335 @@
+{
+  "metadata": {
+    "experiment": "Datrics Text2SQL vs Schema-Only Baseline",
+    "paper_reference": "arXiv:2506.12234v1",
+    "disclaimer": "Prototype empirical comparison on curated test suite. Not a reproduction of an unreported benchmark.",
+    "test_cases_count": 10,
+    "timestamp": "2026-10-23T14:00:48Z"
+  },
+  "summary": {
+    "datrics_text2sql": {
+      "valid_sql_rate": 0.7,
+      "exact_match_rate": 1.0,
+      "execution_accuracy": 1.0,
+      "mean_table_precision": 1.0,
+      "mean_table_recall": 1.0,
+      "clarification_rate": 0.3,
+      "mean_latency_ms": 51.34
+    },
+    "baseline_schema_only": {
+      "valid_sql_rate": 1.0,
+      "exact_match_rate": 1.0,
+      "execution_accuracy": 1.0,
+      "mean_table_precision": 1.0,
+      "mean_table_recall": 1.0,
+      "clarification_rate": 0.0,
+      "mean_latency_ms": 0.23
+    }
+  },
+  "details": [
+    {
+      "id": "TEST001",
+      "question": "Show all active customers in the UK.",
+      "expected_sql": "SELECT id, name, email, city FROM customers WHERE country = 'UK' AND status = 'active';",
+      "datrics": {
+        "generated_sql": "SELECT id, name, email, city FROM customers WHERE country = 'UK' AND status = 'active';",
+        "strategy": "FLEXIBLE_TEMPLATE",
+        "is_valid": true,
+        "exact_match": true,
+        "execution_accuracy": true,
+        "clarification": null,
+        "table_metrics": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "latency_ms": 176.82
+      },
+      "baseline": {
+        "generated_sql": "SELECT id, name, email, city FROM customers WHERE country = 'UK' AND status = 'active';",
+        "is_valid": true,
+        "exact_match": true,
+        "execution_accuracy": true,
+        "table_metrics": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "latency_ms": 0.26
+      }
+    },
+    {
+      "id": "TEST002",
+      "question": "What is the total number of products in stock across all items?",
+      "expected_sql": "SELECT SUM(stock_quantity) AS total_inventory FROM products WHERE is_active = 1;",
+      "datrics": {
+        "generated_sql": "SELECT SUM(stock_quantity) AS total_inventory FROM products WHERE is_active = 1;",
+        "strategy": "FLEXIBLE_TEMPLATE",
+        "is_valid": true,
+        "exact_match": true,
+        "execution_accuracy": true,
+        "clarification": null,
+        "table_metrics": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "latency_ms": 51.53
+      },
+      "baseline": {
+        "generated_sql": "SELECT SUM(stock_quantity) AS total_inventory FROM products WHERE is_active = 1;",
+        "is_valid": true,
+        "exact_match": true,
+        "execution_accuracy": true,
+        "table_metrics": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "latency_ms": 0.2
+      }
+    },
+    {
+      "id": "TEST003",
+      "question": "Find total spending for each customer on completed orders.",
+      "expected_sql": "SELECT c.id, c.name, SUM(o.total_amount) AS total_spent FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.status = 'completed' GROUP BY c.id, c.name ORDER BY total_spent DESC;",
+      "datrics": {
+        "generated_sql": "SELECT c.id, c.name, SUM(o.total_amount) AS total_spent FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.status = 'completed' GROUP BY c.id, c.name ORDER BY total_spent DESC;",
+        "strategy": "FLEXIBLE_TEMPLATE",
+        "is_valid": true,
+        "exact_match": true,
+        "execution_accuracy": true,
+        "clarification": null,
+        "table_metrics": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "latency_ms": 49.86
+      },
+      "baseline": {
+        "generated_sql": "SELECT c.id, c.name, SUM(o.total_amount) AS total_spent FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.status = 'completed' GROUP BY c.id, c.name ORDER BY total_spent DESC;",
+        "is_valid": true,
+        "exact_match": true,
+        "execution_accuracy": true,
+        "table_metrics": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "latency_ms": 0.17
+      }
+    },
+    {
+      "id": "TEST004",
+      "question": "Show completed orders with total amount greater than 200 dollars.",
+      "expected_sql": "SELECT id, customer_id, order_date, total_amount FROM orders WHERE status = 'completed' AND total_amount > 200 ORDER BY total_amount DESC;",
+      "datrics": {
+        "generated_sql": "SELECT id, customer_id, order_date, total_amount FROM orders WHERE status = 'completed' AND total_amount > 200 ORDER BY total_amount DESC;",
+        "strategy": "FLEXIBLE_TEMPLATE",
+        "is_valid": true,
+        "exact_match": true,
+        "execution_accuracy": true,
+        "clarification": null,
+        "table_metrics": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "latency_ms": 60.81
+      },
+      "baseline": {
+        "generated_sql": "SELECT id, customer_id, order_date, total_amount FROM orders WHERE status = 'completed' AND total_amount > 200 ORDER BY total_amount DESC;",
+        "is_valid": true,
+        "exact_match": true,
+        "execution_accuracy": true,
+        "table_metrics": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "latency_ms": 0.17
+      }
+    },
+    {
+      "id": "TEST005",
+      "question": "Find the top 2 best-selling products by quantity sold.",
+      "expected_sql": "SELECT p.id, p.name, SUM(oi.quantity) AS total_sold FROM products p JOIN order_items oi ON p.id = oi.product_id GROUP BY p.id, p.name ORDER BY total_sold DESC LIMIT 2;",
+      "datrics": {
+        "generated_sql": "SELECT p.id, p.name, SUM(oi.quantity) AS total_sold FROM products p JOIN order_items oi ON p.id = oi.product_id GROUP BY p.id, p.name ORDER BY total_sold DESC LIMIT 2;",
+        "strategy": "FLEXIBLE_TEMPLATE",
+        "is_valid": true,
+        "exact_match": true,
+        "execution_accuracy": true,
+        "clarification": null,
+        "table_metrics": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "latency_ms": 63.0
+      },
+      "baseline": {
+        "generated_sql": "SELECT p.id, p.name, SUM(oi.quantity) AS total_sold FROM products p JOIN order_items oi ON p.id = oi.product_id GROUP BY p.id, p.name ORDER BY total_sold DESC LIMIT 2;",
+        "is_valid": true,
+        "exact_match": true,
+        "execution_accuracy": true,
+        "table_metrics": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "latency_ms": 0.29
+      }
+    },
+    {
+      "id": "TEST006",
+      "question": "What is the average transaction value of completed orders in London?",
+      "expected_sql": "SELECT ROUND(AVG(total_amount), 2) AS avg_order_value FROM orders WHERE status = 'completed' AND shipping_city = 'London';",
+      "datrics": {
+        "generated_sql": "SELECT ROUND(AVG(total_amount), 2) AS avg_order_value FROM orders WHERE status = 'completed' AND shipping_city = 'London';",
+        "strategy": "FLEXIBLE_TEMPLATE",
+        "is_valid": true,
+        "exact_match": true,
+        "execution_accuracy": true,
+        "clarification": null,
+        "table_metrics": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "latency_ms": 53.94
+      },
+      "baseline": {
+        "generated_sql": "SELECT ROUND(AVG(total_amount), 2) AS avg_order_value FROM orders WHERE status = 'completed' AND shipping_city = 'London';",
+        "is_valid": true,
+        "exact_match": true,
+        "execution_accuracy": true,
+        "table_metrics": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "latency_ms": 0.21
+      }
+    },
+    {
+      "id": "TEST007",
+      "question": "List payments made via PayPal with their amounts and statuses.",
+      "expected_sql": "SELECT id, order_id, amount, status, payment_date FROM payments WHERE payment_method = 'paypal';",
+      "datrics": {
+        "generated_sql": "SELECT id, order_id, amount, status, payment_date FROM payments WHERE payment_method = 'paypal';",
+        "strategy": "FLEXIBLE_TEMPLATE",
+        "is_valid": true,
+        "exact_match": true,
+        "execution_accuracy": true,
+        "clarification": null,
+        "table_metrics": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "latency_ms": 56.36
+      },
+      "baseline": {
+        "generated_sql": "SELECT id, order_id, amount, status, payment_date FROM payments WHERE payment_method = 'paypal';",
+        "is_valid": true,
+        "exact_match": true,
+        "execution_accuracy": true,
+        "table_metrics": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "latency_ms": 0.25
+      }
+    },
+    {
+      "id": "TEST008",
+      "question": "Show me top subscribers",
+      "expected_sql": null,
+      "datrics": {
+        "generated_sql": "",
+        "strategy": "FLEXIBLE_TEMPLATE",
+        "is_valid": false,
+        "exact_match": false,
+        "execution_accuracy": false,
+        "clarification": "The term 'top subscribers' is ambiguous. Did you mean highest spending customers or most recent active customers?",
+        "table_metrics": {
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "latency_ms": 0.3
+      },
+      "baseline": {
+        "generated_sql": "SELECT * FROM orders LIMIT 10;",
+        "is_valid": true,
+        "exact_match": false,
+        "execution_accuracy": false,
+        "table_metrics": {
+          "precision": 0.0,
+          "recall": 1.0
+        },
+        "latency_ms": 0.27
+      }
+    },
+    {
+      "id": "TEST009",
+      "question": "Predict the sales forecast for next quarter using linear regression.",
+      "expected_sql": null,
+      "datrics": {
+        "generated_sql": "",
+        "strategy": "FLEXIBLE_TEMPLATE",
+        "is_valid": false,
+        "exact_match": false,
+        "execution_accuracy": false,
+        "clarification": "Machine learning predictions and statistical forecasting are beyond SQL query capabilities.",
+        "table_metrics": {
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "latency_ms": 0.24
+      },
+      "baseline": {
+        "generated_sql": "SELECT * FROM orders LIMIT 10;",
+        "is_valid": true,
+        "exact_match": false,
+        "execution_accuracy": false,
+        "table_metrics": {
+          "precision": 0.0,
+          "recall": 1.0
+        },
+        "latency_ms": 0.26
+      }
+    },
+    {
+      "id": "TEST010",
+      "question": "Find the loyalty tier points and bonus tokens for customer Alice.",
+      "expected_sql": null,
+      "datrics": {
+        "generated_sql": "",
+        "strategy": "FLEXIBLE_TEMPLATE",
+        "is_valid": false,
+        "exact_match": false,
+        "execution_accuracy": false,
+        "clarification": "The database does not contain loyalty points or bonus token tables.",
+        "table_metrics": {
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "latency_ms": 0.51
+      },
+      "baseline": {
+        "generated_sql": "SELECT * FROM orders LIMIT 10;",
+        "is_valid": true,
+        "exact_match": false,
+        "execution_accuracy": false,
+        "table_metrics": {
+          "precision": 0.0,
+          "recall": 1.0
+        },
+        "latency_ms": 0.25
+      }
+    }
+  ]
+}

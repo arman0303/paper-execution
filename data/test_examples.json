@@ -1,0 +1,92 @@
+[
+  {
+    "id": "TEST001",
+    "question": "Show all active customers in the UK.",
+    "expected_sql": "SELECT id, name, email, city FROM customers WHERE country = 'UK' AND status = 'active';",
+    "category": "simple_filtering",
+    "expected_tables": ["customers"],
+    "is_ambiguous": false,
+    "is_unsupported": false
+  },
+  {
+    "id": "TEST002",
+    "question": "What is the total number of products in stock across all items?",
+    "expected_sql": "SELECT SUM(stock_quantity) AS total_inventory FROM products WHERE is_active = 1;",
+    "category": "aggregation",
+    "expected_tables": ["products"],
+    "is_ambiguous": false,
+    "is_unsupported": false
+  },
+  {
+    "id": "TEST003",
+    "question": "Find total spending for each customer on completed orders.",
+    "expected_sql": "SELECT c.id, c.name, SUM(o.total_amount) AS total_spent FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.status = 'completed' GROUP BY c.id, c.name ORDER BY total_spent DESC;",
+    "category": "multi_table_join_and_group",
+    "expected_tables": ["customers", "orders"],
+    "is_ambiguous": false,
+    "is_unsupported": false
+  },
+  {
+    "id": "TEST004",
+    "question": "Show completed orders with total amount greater than 200 dollars.",
+    "expected_sql": "SELECT id, customer_id, order_date, total_amount FROM orders WHERE status = 'completed' AND total_amount > 200 ORDER BY total_amount DESC;",
+    "category": "filtering_and_sorting",
+    "expected_tables": ["orders"],
+    "is_ambiguous": false,
+    "is_unsupported": false
+  },
+  {
+    "id": "TEST005",
+    "question": "Find the top 2 best-selling products by quantity sold.",
+    "expected_sql": "SELECT p.id, p.name, SUM(oi.quantity) AS total_sold FROM products p JOIN order_items oi ON p.id = oi.product_id GROUP BY p.id, p.name ORDER BY total_sold DESC LIMIT 2;",
+    "category": "top_n_aggregation",
+    "expected_tables": ["products", "order_items"],
+    "is_ambiguous": false,
+    "is_unsupported": false
+  },
+  {
+    "id": "TEST006",
+    "question": "What is the average transaction value of completed orders in London?",
+    "expected_sql": "SELECT ROUND(AVG(total_amount), 2) AS avg_order_value FROM orders WHERE status = 'completed' AND shipping_city = 'London';",
+    "category": "aggregation_with_filter",
+    "expected_tables": ["orders"],
+    "is_ambiguous": false,
+    "is_unsupported": false
+  },
+  {
+    "id": "TEST007",
+    "question": "List payments made via PayPal with their amounts and statuses.",
+    "expected_sql": "SELECT id, order_id, amount, status, payment_date FROM payments WHERE payment_method = 'paypal';",
+    "category": "simple_filtering",
+    "expected_tables": ["payments"],
+    "is_ambiguous": false,
+    "is_unsupported": false
+  },
+  {
+    "id": "TEST008",
+    "question": "Show me top subscribers",
+    "expected_sql": null,
+    "category": "ambiguous_request",
+    "expected_tables": [],
+    "is_ambiguous": true,
+    "is_unsupported": false
+  },
+  {
+    "id": "TEST009",
+    "question": "Predict the sales forecast for next quarter using linear regression.",
+    "expected_sql": null,
+    "category": "unsupported_question",
+    "expected_tables": [],
+    "is_ambiguous": false,
+    "is_unsupported": true
+  },
+  {
+    "id": "TEST010",
+    "question": "Find the loyalty tier points and bonus tokens for customer Alice.",
+    "expected_sql": null,
+    "category": "nonexistent_schema_reference",
+    "expected_tables": [],
+    "is_ambiguous": true,
+    "is_unsupported": true
+  }
+]

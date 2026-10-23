@@ -1,0 +1,499 @@
+[
+  {
+    "id": "EX001",
+    "question": "Show all active customers located in the USA.",
+    "sql": "SELECT id, name, email, city FROM customers WHERE country = 'USA' AND status = 'active';",
+    "normalized_question": "List active customers in a specific country",
+    "main_clause": "list active customers",
+    "details": "located in a specific country",
+    "entities": [
+      {"label": "customers", "entity_type": "category", "attributes": "active"},
+      {"label": "country", "entity_type": "identifier", "attributes": "USA"}
+    ],
+    "tables": ["customers"],
+    "columns": ["id", "name", "email", "city", "country", "status"],
+    "operations": [
+      {"operation": "FILTER", "target": "country", "condition": "= 'USA'"},
+      {"operation": "FILTER", "target": "status", "condition": "= 'active'"}
+    ],
+    "variations": [
+      "Find all customers from the United States with an active status.",
+      "Get a list of USA customers who are currently active.",
+      "Retrieve active buyer profiles based in USA."
+    ]
+  },
+  {
+    "id": "EX002",
+    "question": "What is the total number of customers registered per country?",
+    "sql": "SELECT country, COUNT(id) AS customer_count FROM customers GROUP BY country ORDER BY customer_count DESC;",
+    "normalized_question": "Count total customers grouped by country",
+    "main_clause": "count total customers",
+    "details": "grouped by country, sorted descending",
+    "entities": [
+      {"label": "customer count", "entity_type": "metric", "attributes": "total"},
+      {"label": "country", "entity_type": "identifier", "attributes": "grouping"}
+    ],
+    "tables": ["customers"],
+    "columns": ["id", "country"],
+    "operations": [
+      {"operation": "COUNT", "target": "id", "condition": "aggregated per country"},
+      {"operation": "GROUP BY", "target": "country", "condition": null},
+      {"operation": "ORDER BY", "target": "customer_count", "condition": "DESC"}
+    ],
+    "variations": [
+      "How many customers are there in each country?",
+      "Show customer breakdown by country ordered from highest to lowest.",
+      "Calculate the count of users per nation."
+    ]
+  },
+  {
+    "id": "EX003",
+    "question": "Find all products with a price greater than 100 dollars.",
+    "sql": "SELECT id, name, category, price FROM products WHERE price > 100 ORDER BY price DESC;",
+    "normalized_question": "List products with price above a specified threshold",
+    "main_clause": "list products",
+    "details": "with price greater than a numerical threshold",
+    "entities": [
+      {"label": "products", "entity_type": "category", "attributes": "items"},
+      {"label": "price", "entity_type": "metric", "attributes": "greater than threshold"}
+    ],
+    "tables": ["products"],
+    "columns": ["id", "name", "category", "price"],
+    "operations": [
+      {"operation": "FILTER", "target": "price", "condition": "> 100"},
+      {"operation": "ORDER BY", "target": "price", "condition": "DESC"}
+    ],
+    "variations": [
+      "Which products cost more than $100?",
+      "Retrieve items priced over 100 dollars sorted by cost.",
+      "Show premium products with price exceeding 100."
+    ]
+  },
+  {
+    "id": "EX004",
+    "question": "What is the average price of products in each category?",
+    "sql": "SELECT category, ROUND(AVG(price), 2) AS avg_price FROM products GROUP BY category;",
+    "normalized_question": "Calculate average product price per category",
+    "main_clause": "calculate average product price",
+    "details": "grouped by category",
+    "entities": [
+      {"label": "average price", "entity_type": "metric", "attributes": "mean price"},
+      {"label": "category", "entity_type": "identifier", "attributes": "product category"}
+    ],
+    "tables": ["products"],
+    "columns": ["category", "price"],
+    "operations": [
+      {"operation": "AVG", "target": "price", "condition": "rounded to 2 decimals"},
+      {"operation": "GROUP BY", "target": "category", "condition": null}
+    ],
+    "variations": [
+      "Show the mean price of items by product category.",
+      "Get the average price for each category of goods.",
+      "Compute product category average prices."
+    ]
+  },
+  {
+    "id": "EX005",
+    "question": "Show all completed orders with their customer names.",
+    "sql": "SELECT o.id AS order_id, c.name AS customer_name, o.order_date, o.total_amount FROM orders o JOIN customers c ON o.customer_id = c.id WHERE o.status = 'completed';",
+    "normalized_question": "List completed orders including buyer name and total amount",
+    "main_clause": "list completed orders",
+    "details": "joined with customer identity",
+    "entities": [
+      {"label": "completed orders", "entity_type": "category", "attributes": "orders with status completed"},
+      {"label": "customer name", "entity_type": "identifier", "attributes": "buyer name"}
+    ],
+    "tables": ["orders", "customers"],
+    "columns": ["orders.id", "orders.customer_id", "orders.order_date", "orders.total_amount", "orders.status", "customers.id", "customers.name"],
+    "operations": [
+      {"operation": "JOIN", "target": "orders.customer_id = customers.id", "condition": null},
+      {"operation": "FILTER", "target": "orders.status", "condition": "= 'completed'"}
+    ],
+    "variations": [
+      "Retrieve orders that are completed along with the name of the buyer.",
+      "Show order details and buyer names for all completed purchases.",
+      "Display completed transactions with associated customer names."
+    ]
+  },
+  {
+    "id": "EX006",
+    "question": "What is the total revenue generated from completed orders?",
+    "sql": "SELECT SUM(total_amount) AS total_revenue FROM orders WHERE status = 'completed';",
+    "normalized_question": "Compute gross revenue from completed orders",
+    "main_clause": "compute gross revenue",
+    "details": "filtered by completed order status",
+    "entities": [
+      {"label": "gross revenue", "entity_type": "metric", "attributes": "sum of order total_amount"}
+    ],
+    "tables": ["orders"],
+    "columns": ["total_amount", "status"],
+    "operations": [
+      {"operation": "SUM", "target": "total_amount", "condition": null},
+      {"operation": "FILTER", "target": "status", "condition": "= 'completed'"}
+    ],
+    "variations": [
+      "Calculate total sales revenue from all completed transactions.",
+      "How much money was earned from completed orders in total?",
+      "Sum the total amount for all orders with completed status."
+    ]
+  },
+  {
+    "id": "EX007",
+    "question": "Find the top 3 customers by total spending on completed orders.",
+    "sql": "SELECT c.id, c.name, SUM(o.total_amount) AS total_spent FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.status = 'completed' GROUP BY c.id, c.name ORDER BY total_spent DESC LIMIT 3;",
+    "normalized_question": "Retrieve top ranking customers by total expenditure on completed orders",
+    "main_clause": "retrieve top ranking customers by expenditure",
+    "details": "completed orders only, limited to top 3",
+    "entities": [
+      {"label": "customer expenditure", "entity_type": "metric", "attributes": "sum of completed orders"},
+      {"label": "top rank", "entity_type": "identifier", "attributes": "limit 3"}
+    ],
+    "tables": ["customers", "orders"],
+    "columns": ["customers.id", "customers.name", "orders.customer_id", "orders.total_amount", "orders.status"],
+    "operations": [
+      {"operation": "JOIN", "target": "customers.id = orders.customer_id", "condition": null},
+      {"operation": "SUM", "target": "orders.total_amount", "condition": null},
+      {"operation": "FILTER", "target": "orders.status", "condition": "= 'completed'"},
+      {"operation": "ORDER BY", "target": "total_spent", "condition": "DESC"},
+      {"operation": "LIMIT", "target": "3", "condition": null}
+    ],
+    "variations": [
+      "Who are the top 3 highest spending customers?",
+      "List the 3 best buyers ranked by total purchase volume on completed orders.",
+      "Show top 3 customers who spent the most money."
+    ]
+  },
+  {
+    "id": "EX008",
+    "question": "List all products that are currently in stock and active.",
+    "sql": "SELECT id, name, category, price, stock_quantity FROM products WHERE is_active = 1 AND stock_quantity > 0;",
+    "normalized_question": "Retrieve available products in stock",
+    "main_clause": "retrieve available products",
+    "details": "active items with inventory greater than zero",
+    "entities": [
+      {"label": "available merchandise", "entity_type": "category", "attributes": "active with stock"}
+    ],
+    "tables": ["products"],
+    "columns": ["id", "name", "category", "price", "stock_quantity", "is_active"],
+    "operations": [
+      {"operation": "FILTER", "target": "is_active", "condition": "= 1"},
+      {"operation": "FILTER", "target": "stock_quantity", "condition": "> 0"}
+    ],
+    "variations": [
+      "Show items available for sale with inventory above 0.",
+      "Which products are active and in stock right now?",
+      "Find products currently available for purchase."
+    ]
+  },
+  {
+    "id": "EX009",
+    "question": "What is the total quantity sold for each product?",
+    "sql": "SELECT p.name AS product_name, SUM(oi.quantity) AS total_units_sold FROM products p JOIN order_items oi ON p.id = oi.product_id GROUP BY p.id, p.name ORDER BY total_units_sold DESC;",
+    "normalized_question": "Compute total units sold per product",
+    "main_clause": "compute total units sold",
+    "details": "grouped by product, ordered descending",
+    "entities": [
+      {"label": "product sales volume", "entity_type": "metric", "attributes": "sum of order item quantities"}
+    ],
+    "tables": ["products", "order_items"],
+    "columns": ["products.id", "products.name", "order_items.product_id", "order_items.quantity"],
+    "operations": [
+      {"operation": "JOIN", "target": "products.id = order_items.product_id", "condition": null},
+      {"operation": "SUM", "target": "order_items.quantity", "condition": null},
+      {"operation": "GROUP BY", "target": "products.id, products.name", "condition": null},
+      {"operation": "ORDER BY", "target": "total_units_sold", "condition": "DESC"}
+    ],
+    "variations": [
+      "How many units of each product have been sold?",
+      "List products sorted by total quantity sold.",
+      "Calculate total order quantities by product name."
+    ]
+  },
+  {
+    "id": "EX010",
+    "question": "List all payments made using credit card with a successful status.",
+    "sql": "SELECT id, order_id, payment_date, amount FROM payments WHERE payment_method = 'credit_card' AND status = 'successful';",
+    "normalized_question": "Find successful credit card payments",
+    "main_clause": "find successful payments",
+    "details": "filtered by credit card payment method",
+    "entities": [
+      {"label": "credit card payment", "entity_type": "category", "attributes": "successful card transactions"}
+    ],
+    "tables": ["payments"],
+    "columns": ["id", "order_id", "payment_date", "payment_method", "amount", "status"],
+    "operations": [
+      {"operation": "FILTER", "target": "payment_method", "condition": "= 'credit_card'"},
+      {"operation": "FILTER", "target": "status", "condition": "= 'successful'"}
+    ],
+    "variations": [
+      "Show all successful transactions paid by credit card.",
+      "Get credit card payments that succeeded.",
+      "Retrieve successful credit card payment records."
+    ]
+  },
+  {
+    "id": "EX011",
+    "question": "What is the total amount collected per payment method?",
+    "sql": "SELECT payment_method, SUM(amount) AS total_collected FROM payments WHERE status = 'successful' GROUP BY payment_method ORDER BY total_collected DESC;",
+    "normalized_question": "Calculate successful settlement totals grouped by payment method",
+    "main_clause": "calculate settlement totals",
+    "details": "grouped by payment method, successful payments only",
+    "entities": [
+      {"label": "settled funds", "entity_type": "metric", "attributes": "sum of successful payment amounts"}
+    ],
+    "tables": ["payments"],
+    "columns": ["payment_method", "amount", "status"],
+    "operations": [
+      {"operation": "SUM", "target": "amount", "condition": null},
+      {"operation": "FILTER", "target": "status", "condition": "= 'successful'"},
+      {"operation": "GROUP BY", "target": "payment_method", "condition": null}
+    ],
+    "variations": [
+      "Show total money collected by each payment method for successful charges.",
+      "Break down total successful revenue by payment gateway.",
+      "Calculate successful payments sum per method."
+    ]
+  },
+  {
+    "id": "EX012",
+    "question": "Find orders placed in May 2024.",
+    "sql": "SELECT id, customer_id, order_date, status, total_amount FROM orders WHERE order_date >= '2024-05-01' AND order_date < '2024-06-01';",
+    "normalized_question": "Retrieve orders within a specific calendar month",
+    "main_clause": "retrieve orders",
+    "details": "filtered within defined time window",
+    "entities": [
+      {"label": "monthly orders", "entity_type": "category", "attributes": "orders in target month"}
+    ],
+    "tables": ["orders"],
+    "columns": ["id", "customer_id", "order_date", "status", "total_amount"],
+    "operations": [
+      {"operation": "FILTER", "target": "order_date", "condition": "BETWEEN specified dates"}
+    ],
+    "variations": [
+      "Show all orders created during May 2024.",
+      "List purchases made between May 1 and May 31, 2024.",
+      "Get orders timestamped in May 2024."
+    ]
+  },
+  {
+    "id": "EX013",
+    "question": "List the details of items in order 1 including product names and quantities.",
+    "sql": "SELECT oi.id, p.name AS product_name, oi.quantity, oi.unit_price, oi.discount FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = 1;",
+    "normalized_question": "List line items for a specific order with product names",
+    "main_clause": "list line items",
+    "details": "for specific order id, joined with products",
+    "entities": [
+      {"label": "order items", "entity_type": "category", "attributes": "line items of single order"}
+    ],
+    "tables": ["order_items", "products"],
+    "columns": ["order_items.id", "order_items.order_id", "order_items.product_id", "order_items.quantity", "order_items.unit_price", "order_items.discount", "products.name"],
+    "operations": [
+      {"operation": "JOIN", "target": "order_items.product_id = products.id", "condition": null},
+      {"operation": "FILTER", "target": "order_items.order_id", "condition": "= 1"}
+    ],
+    "variations": [
+      "Show products and quantities included in order number 1.",
+      "Get line items for order 1 with product descriptions.",
+      "Retrieve items purchased under order ID 1."
+    ]
+  },
+  {
+    "id": "EX014",
+    "question": "Which customers have placed more than 1 order?",
+    "sql": "SELECT c.id, c.name, COUNT(o.id) AS order_count FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.id, c.name HAVING COUNT(o.id) > 1;",
+    "normalized_question": "Find repeat customers with order count exceeding threshold",
+    "main_clause": "find repeat customers",
+    "details": "having order count greater than one",
+    "entities": [
+      {"label": "repeat customers", "entity_type": "category", "attributes": "buyers with multiple orders"}
+    ],
+    "tables": ["customers", "orders"],
+    "columns": ["customers.id", "customers.name", "orders.customer_id", "orders.id"],
+    "operations": [
+      {"operation": "JOIN", "target": "customers.id = orders.customer_id", "condition": null},
+      {"operation": "GROUP BY", "target": "customers.id, customers.name", "condition": null},
+      {"operation": "HAVING", "target": "COUNT(orders.id)", "condition": "> 1"}
+    ],
+    "variations": [
+      "List buyers who placed multiple orders.",
+      "Show customers with more than one order in the system.",
+      "Find frequent shoppers with order count > 1."
+    ]
+  },
+  {
+    "id": "EX015",
+    "question": "Show the total sales revenue generated by each product category.",
+    "sql": "SELECT p.category, SUM(oi.quantity * oi.unit_price - oi.discount) AS category_revenue FROM products p JOIN order_items oi ON p.id = oi.product_id JOIN orders o ON oi.order_id = o.id WHERE o.status = 'completed' GROUP BY p.category ORDER BY category_revenue DESC;",
+    "normalized_question": "Calculate completed order revenue aggregated by merchandise category",
+    "main_clause": "calculate completed order revenue",
+    "details": "aggregated by product category",
+    "entities": [
+      {"label": "category revenue", "entity_type": "metric", "attributes": "sum of net order items per category"}
+    ],
+    "tables": ["products", "order_items", "orders"],
+    "columns": ["products.category", "order_items.quantity", "order_items.unit_price", "order_items.discount", "orders.status"],
+    "operations": [
+      {"operation": "JOIN", "target": "products.id = order_items.product_id", "condition": null},
+      {"operation": "JOIN", "target": "order_items.order_id = orders.id", "condition": null},
+      {"operation": "FILTER", "target": "orders.status", "condition": "= 'completed'"},
+      {"operation": "GROUP BY", "target": "products.category", "condition": null}
+    ],
+    "variations": [
+      "Break down sales revenue by product category for completed orders.",
+      "How much revenue did each merchandise category generate?",
+      "Calculate category-wise gross income from completed sales."
+    ]
+  },
+  {
+    "id": "EX016",
+    "question": "Find the customer who made the single largest order.",
+    "sql": "SELECT c.id, c.name, o.id AS order_id, o.total_amount FROM customers c JOIN orders o ON c.id = o.customer_id ORDER BY o.total_amount DESC LIMIT 1;",
+    "normalized_question": "Retrieve customer and details for the highest value single order",
+    "main_clause": "retrieve customer for highest order",
+    "details": "ordered by total amount descending, limited to 1",
+    "entities": [
+      {"label": "maximum order", "entity_type": "metric", "attributes": "max order total amount"}
+    ],
+    "tables": ["customers", "orders"],
+    "columns": ["customers.id", "customers.name", "orders.id", "orders.total_amount"],
+    "operations": [
+      {"operation": "JOIN", "target": "customers.id = orders.customer_id", "condition": null},
+      {"operation": "ORDER BY", "target": "orders.total_amount", "condition": "DESC"},
+      {"operation": "LIMIT", "target": "1", "condition": null}
+    ],
+    "variations": [
+      "Which customer placed the most expensive order?",
+      "Show the buyer who had the largest purchase by dollar amount.",
+      "Find the biggest single order and who bought it."
+    ]
+  },
+  {
+    "id": "EX017",
+    "question": "List all customers who have never placed an order.",
+    "sql": "SELECT c.id, c.name, c.email FROM customers c LEFT JOIN orders o ON c.id = o.customer_id WHERE o.id IS NULL;",
+    "normalized_question": "Identify registered customers with zero purchase history",
+    "main_clause": "identify registered customers",
+    "details": "with null order foreign keys",
+    "entities": [
+      {"label": "inactive buyers", "entity_type": "category", "attributes": "customers without orders"}
+    ],
+    "tables": ["customers", "orders"],
+    "columns": ["customers.id", "customers.name", "customers.email", "orders.id", "orders.customer_id"],
+    "operations": [
+      {"operation": "LEFT JOIN", "target": "customers.id = orders.customer_id", "condition": null},
+      {"operation": "FILTER", "target": "orders.id", "condition": "IS NULL"}
+    ],
+    "variations": [
+      "Which registered users have not made any purchases?",
+      "Find customers with no orders recorded in the system.",
+      "Show buyer accounts that have zero transactions."
+    ]
+  },
+  {
+    "id": "EX018",
+    "question": "Count how many orders exist in each order status.",
+    "sql": "SELECT status, COUNT(id) AS order_count FROM orders GROUP BY status;",
+    "normalized_question": "Summarize order counts partitioned by fulfillment status",
+    "main_clause": "summarize order counts",
+    "details": "grouped by order status",
+    "entities": [
+      {"label": "status volume", "entity_type": "metric", "attributes": "order counts by status"}
+    ],
+    "tables": ["orders"],
+    "columns": ["id", "status"],
+    "operations": [
+      {"operation": "COUNT", "target": "id", "condition": null},
+      {"operation": "GROUP BY", "target": "status", "condition": null}
+    ],
+    "variations": [
+      "What is the distribution of orders across different statuses?",
+      "Show how many orders are pending, completed, cancelled, or refunded.",
+      "Count orders by fulfillment status."
+    ]
+  },
+  {
+    "id": "EX019",
+    "question": "What is the average order total for completed orders?",
+    "sql": "SELECT ROUND(AVG(total_amount), 2) AS average_order_value FROM orders WHERE status = 'completed';",
+    "normalized_question": "Calculate average transaction amount for completed purchases",
+    "main_clause": "calculate average transaction amount",
+    "details": "for completed orders",
+    "entities": [
+      {"label": "average order value", "entity_type": "metric", "attributes": "mean completed order total"}
+    ],
+    "tables": ["orders"],
+    "columns": ["total_amount", "status"],
+    "operations": [
+      {"operation": "AVG", "target": "total_amount", "condition": null},
+      {"operation": "FILTER", "target": "status", "condition": "= 'completed'"}
+    ],
+    "variations": [
+      "What is the average amount spent per completed order?",
+      "Compute average order value (AOV) for successful purchases.",
+      "Find the mean total amount for completed orders."
+    ]
+  },
+  {
+    "id": "EX020",
+    "question": "Show customers living in London or New York.",
+    "sql": "SELECT id, name, city, country FROM customers WHERE city IN ('London', 'New York');",
+    "normalized_question": "List customers located in specific target metropolitan areas",
+    "main_clause": "list customers",
+    "details": "residing in selected cities",
+    "entities": [
+      {"label": "metropolitan customers", "entity_type": "category", "attributes": "London or New York"}
+    ],
+    "tables": ["customers"],
+    "columns": ["id", "name", "city", "country"],
+    "operations": [
+      {"operation": "FILTER", "target": "city", "condition": "IN ('London', 'New York')"}
+    ],
+    "variations": [
+      "Which customers reside in New York or London?",
+      "Get all users from London and New York cities.",
+      "Find buyer profiles based in London or New York."
+    ]
+  },
+  {
+    "id": "EX021",
+    "question": "List all failed payment attempts along with order ID and amount.",
+    "sql": "SELECT id, order_id, payment_method, amount, payment_date FROM payments WHERE status = 'failed';",
+    "normalized_question": "Retrieve unsuccessful payment transactions",
+    "main_clause": "retrieve unsuccessful payments",
+    "details": "with status failed",
+    "entities": [
+      {"label": "failed transactions", "entity_type": "category", "attributes": "payments with status failed"}
+    ],
+    "tables": ["payments"],
+    "columns": ["id", "order_id", "payment_method", "amount", "payment_date", "status"],
+    "operations": [
+      {"operation": "FILTER", "target": "status", "condition": "= 'failed'"}
+    ],
+    "variations": [
+      "Show all payments that were unsuccessful.",
+      "Get order IDs and amounts for failed payment charges.",
+      "Find declined payment records."
+    ]
+  },
+  {
+    "id": "EX022",
+    "question": "Calculate total discount given across all orders.",
+    "sql": "SELECT ROUND(SUM(discount), 2) AS total_discount_given FROM order_items;",
+    "normalized_question": "Compute aggregated discount concessions across order items",
+    "main_clause": "compute aggregated discount",
+    "details": "across all order line items",
+    "entities": [
+      {"label": "total discounts", "entity_type": "metric", "attributes": "sum of order item discounts"}
+    ],
+    "tables": ["order_items"],
+    "columns": ["discount"],
+    "operations": [
+      {"operation": "SUM", "target": "discount", "condition": null}
+    ],
+    "variations": [
+      "How much money was discounted in total across all purchases?",
+      "Sum the total discount amounts on order items.",
+      "What is the total value of discounts given to buyers?"
+    ]
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "BR001",
+    "name": "completed_orders_only_for_revenue",
+    "rule": "When calculating gross revenue, total sales, or customer purchase totals, only consider orders with status = 'completed'.",
+    "applicable_tables": ["orders"],
+    "filter_condition": "status = 'completed'"
+  },
+  {
+    "id": "BR002",
+    "name": "active_customers_filter",
+    "rule": "When generating queries about current or eligible customers, exclude inactive and suspended accounts (status = 'active').",
+    "applicable_tables": ["customers"],
+    "filter_condition": "status = 'active'"
+  },
+  {
+    "id": "BR003",
+    "name": "successful_payments_filter",
+    "rule": "Only payments with status = 'successful' count towards settled or reconciled cash collections.",
+    "applicable_tables": ["payments"],
+    "filter_condition": "status = 'successful'"
+  },
+  {
+    "id": "BR004",
+    "name": "available_inventory_definition",
+    "rule": "An item is considered available for sale only when is_active = 1 and stock_quantity > 0.",
+    "applicable_tables": ["products"],
+    "filter_condition": "is_active = 1 AND stock_quantity > 0"
+  },
+  {
+    "id": "BR005",
+    "name": "order_item_line_total",
+    "rule": "The net line-item revenue for an order item is computed as (quantity * unit_price) - discount.",
+    "applicable_tables": ["order_items"],
+    "filter_condition": null
+  }
+]
