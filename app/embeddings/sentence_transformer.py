@@ -14,6 +14,10 @@ class EmbeddingService:
         self._use_fallback = False
 
     def _load_model(self):
+        if settings.EMBEDDING_PROVIDER.lower() in ("tfidf", "fallback", "hash"):
+            self._use_fallback = True
+            return
+
         if self._model is None and not self._use_fallback:
             try:
                 from sentence_transformers import SentenceTransformer

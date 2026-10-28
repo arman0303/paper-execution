@@ -84,8 +84,8 @@
       {"column": "id", "description": "Unique integer identifier for the payment event."},
       {"column": "order_id", "description": "Foreign key pointing to the corresponding `orders.id`."},
       {"column": "payment_date", "description": "Timestamp when the payment attempt was processed."},
-      {"column": "payment_method", "description": "Channel used: 'credit_card', 'paypal', 'bank_transfer', or 'crypto'." ,
-      "status": "Outcome status: 'successful', 'failed', or 'refunded'."},
+      {"column": "payment_method", "description": "Channel used: 'credit_card', 'paypal', 'bank_transfer', or 'crypto'."},
+      {"column": "status", "description": "Outcome status: 'successful', 'failed', or 'refunded'."},
       {"column": "amount", "description": "Financial dollar amount settled in this payment transaction."}
     ],
     "entities": ["payment", "settlement", "payment method", "payment status", "collected revenue"],

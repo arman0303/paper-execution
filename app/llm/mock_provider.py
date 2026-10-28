@@ -106,7 +106,8 @@ class MockLLMProvider(BaseLLMProvider):
             })
 
         # 2. Table Refinement via Business Rules (TB = LLM(N, R))
-        if "refine table selection based on business rules" in prompt_lower or "tb = llm(n, r)" in prompt_lower:
+        # BUG-001 FIX: Added matching for actual prompt used by TableRefiner.refine_with_business_rules()
+        if ("refine table selection based on business rules" in prompt_lower or "tb = llm(n, r)" in prompt_lower or ("additional database tables" in prompt_lower and "business rules" in prompt_lower) or ("given the normalized user question" in prompt_lower and "domain business rules" in prompt_lower)):
             tables = []
             if "revenue" in prompt_lower or "sales" in prompt_lower or "spent" in prompt_lower or "order" in prompt_lower:
                 tables.append("orders")
@@ -121,7 +122,8 @@ class MockLLMProvider(BaseLLMProvider):
             return json.dumps({"tables": tables, "reasoning": "Derived from business rules and entities."})
 
         # 3. Final Table Refinement (TR = LLM(N, Instr_Domain, R, Candidates))
-        if "final table refinement" in prompt_lower or "table refining prompt" in prompt_lower:
+        # BUG-001 FIX: Added actual prompt triggers from TableRefiner.final_table_refinement()
+        if ("final table refinement" in prompt_lower or "table refining prompt" in prompt_lower or "table refinement engine" in prompt_lower or ("candidate tables context" in prompt_lower and "domain-specific instructions" in prompt_lower)):
             selected_tables = ["orders"]
             justifications = {"orders": "Primary order transaction record"}
             if "customer" in prompt_lower or "buyer" in prompt_lower or "user" in prompt_lower:
